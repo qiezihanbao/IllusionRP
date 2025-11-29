@@ -155,16 +155,7 @@ namespace Illusion.Rendering.Editor
 
             try
             {
-                try
-                {
-                    AssetDatabase.StartAssetEditing();
-                    await prtBaker.BakeVolume(prtProbeVolume, _cancellationTokenSource.Token);
-                }
-                finally
-                {
-                    AssetDatabase.StopAssetEditing();
-                }
-
+                await prtBaker.BakeVolume(prtProbeVolume, _cancellationTokenSource.Token);
                 EditorUtility.SetDirty(prtProbeVolume.asset);
                 AssetDatabase.SaveAssets();
                 prtProbeVolume.ReloadBakedData();
@@ -203,16 +194,8 @@ namespace Illusion.Rendering.Editor
 
             try
             {
-                try
-                {
-                    AssetDatabase.StartAssetEditing();
-                    await Task.Delay(TimeSpan.FromSeconds(1), _cancellationTokenSource.Token);
-                    prtBaker.BakeReflectionProbe(reflectionProbe);
-                }
-                finally
-                {
-                    AssetDatabase.StopAssetEditing();
-                }
+                await Task.Delay(TimeSpan.FromSeconds(1), _cancellationTokenSource.Token);
+                prtBaker.BakeReflectionProbe(reflectionProbe);
 
                 EditorUtility.SetDirty(reflectionProbe);
                 AssetDatabase.SaveAssets();
@@ -246,17 +229,15 @@ namespace Illusion.Rendering.Editor
                 Directory.CreateDirectory(targetDir);
                 AssetDatabase.Refresh();
             }
-
-
+            
             var asset = ScriptableObject.CreateInstance<PRTProbeVolumeAsset>();
             string assetPath = Path.Combine(targetDir, $"{sceneName}_ProbeVolume.asset");
             assetPath = assetPath.Replace("\\", "/"); 
             AssetDatabase.CreateAsset(asset, assetPath);
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
-
+            
             prtProbeVolume.asset = asset;
-
             EditorSceneManager.MarkSceneDirty(SceneManager.GetActiveScene());
             return true;
         }

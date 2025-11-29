@@ -130,18 +130,26 @@ namespace Illusion.Rendering.Editor
             // Record
             foreach (var renderer in renderers)
             {
-                if (renderer && renderer.sharedMaterial)
+                var materials = renderer.sharedMaterials;
+                if (renderer && materials.Length > 0)
                 {
-                    _originalShaders[renderer.sharedMaterial] = renderer.sharedMaterial.shader;
+                    foreach (var material in materials)
+                    {
+                        _originalShaders[material] = renderer.sharedMaterial.shader;
+                    }
                 }
             }
 
             // Set
             foreach (var renderer in renderers)
             {
-                if (renderer && renderer.sharedMaterial)
+                var materials = renderer.sharedMaterials;
+                if (renderer && materials.Length > 0)
                 {
-                    renderer.sharedMaterial.shader = shader;
+                    foreach (var material in materials)
+                    {
+                        material.shader = shader;
+                    }
                 }
             }
         }
