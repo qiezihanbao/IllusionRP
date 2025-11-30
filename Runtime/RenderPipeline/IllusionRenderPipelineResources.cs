@@ -79,6 +79,10 @@ namespace Illusion.Rendering
         public Texture2D scramblingTile1SPP;
 
         public Texture2D rankingTile1SPP;
+        
+        public Texture2D scramblingTile8SPP;
+
+        public Texture2D rankingTile8SPP;
 
         public Texture2D scramblingTex;
 

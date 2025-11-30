@@ -304,6 +304,8 @@ namespace Illusion.Rendering
             var offsetBuffer = _rendererData.DepthMipChainInfo.GetOffsetBufferData(
                 _rendererData.DepthPyramidMipLevelOffsetsBuffer);
 
+            _rendererData.BindDitheredRNGData8SPP(cmd);
+            
             // Set constant buffer
             ConstantBuffer.Push(cmd, _giVariables, _ssgiComputeShader, Properties.ShaderVariablesSSGI);
 

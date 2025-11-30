@@ -275,6 +275,8 @@ namespace Illusion.Rendering
             var offsetBuffer = _rendererData.DepthMipChainInfo.GetOffsetBufferData(_rendererData.DepthPyramidMipLevelOffsetsBuffer);
             // ============================ Property Block ======================== //
 
+            _rendererData.BindDitheredRNGData1SPP(cmd);
+            
             if (_tracingInCS)
             {
                 cmd.SetComputeBufferParam(_computeShader, _tracingKernel, IllusionShaderProperties._DepthPyramidMipLevelOffsets, offsetBuffer);

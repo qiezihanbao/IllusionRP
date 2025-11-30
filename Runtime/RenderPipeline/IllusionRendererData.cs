@@ -578,7 +578,6 @@ namespace Illusion.Rendering
         /// <param name="renderingData"></param>
         internal void BindGlobalTextures(CommandBuffer cmd, ref RenderingData renderingData)
         {
-            BindDitheredRNGData1SPP(cmd);
             BindHistoryColor(cmd, renderingData);
             BindAmbientProbe(cmd);
         }
@@ -612,11 +611,19 @@ namespace Illusion.Rendering
             }
         }
 
-        private void BindDitheredRNGData1SPP(CommandBuffer cmd)
+        public void BindDitheredRNGData1SPP(CommandBuffer cmd)
         {
             cmd.SetGlobalTexture(IllusionShaderProperties._OwenScrambledTexture, RuntimeResources.owenScrambled256Tex);
             cmd.SetGlobalTexture(IllusionShaderProperties._ScramblingTileXSPP, RuntimeResources.scramblingTile1SPP);
             cmd.SetGlobalTexture(IllusionShaderProperties._RankingTileXSPP, RuntimeResources.rankingTile1SPP);
+            cmd.SetGlobalTexture(IllusionShaderProperties._ScramblingTexture, RuntimeResources.scramblingTex);
+        }
+        
+        public void BindDitheredRNGData8SPP(CommandBuffer cmd)
+        {
+            cmd.SetGlobalTexture(IllusionShaderProperties._OwenScrambledTexture, RuntimeResources.owenScrambled256Tex);
+            cmd.SetGlobalTexture(IllusionShaderProperties._ScramblingTileXSPP, RuntimeResources.scramblingTile8SPP);
+            cmd.SetGlobalTexture(IllusionShaderProperties._RankingTileXSPP, RuntimeResources.rankingTile8SPP);
             cmd.SetGlobalTexture(IllusionShaderProperties._ScramblingTexture, RuntimeResources.scramblingTex);
         }
 
