@@ -175,6 +175,11 @@ namespace Illusion.Rendering
         public bool SampleScreenSpaceIndirectDiffuse { get; internal set; } = true;
         
         /// <summary>
+        /// Get whether the renderer can sample screen space reflection texture.
+        /// </summary>
+        public bool SampleScreenSpaceReflection { get; internal set; } = true;
+        
+        /// <summary>
         /// Whether the renderer should copy depth and normal texture for next frame usage.
         /// </summary>
         public bool RequireHistoryDepthNormal { get; internal set; }

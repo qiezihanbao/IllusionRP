@@ -398,7 +398,7 @@ namespace Illusion.Rendering
             renderer.EnqueuePass(groundTruthAO ? _enableSSAOPass : _disableSSAOPass);
             renderer.EnqueuePass(useTransparentShadow ? _enableTransparentPerObjectShadowsPass : _disableTransparentPerObjectShadowsPass);
             renderer.EnqueuePass(subsurfaceScattering ? _enableScreenSpaceSubsurfaceScatteringPass : _disableScreenSpaceSubsurfaceScatteringPass);
-            renderer.EnqueuePass(useScreenSpaceReflection ? _enableScreenSpaceReflectionPass : _disableScreenSpaceReflectionPass);
+            renderer.EnqueuePass(screenSpaceReflection ? _enableScreenSpaceReflectionPass : _disableScreenSpaceReflectionPass);
             renderer.EnqueuePass(screenSpaceGlobalIllumination ? _enableScreenSpaceGlobalIlluminationPass : _disableScreenSpaceGlobalIlluminationPass);
             renderer.EnqueuePass(isDeferred ? _enableDeferredPass : _disableDeferredPass);
             renderer.EnqueuePass(precomputedRadianceTransferGI ? _enablePRTGIPass : _disablePRTGIPass);
@@ -439,9 +439,12 @@ namespace Illusion.Rendering
                 renderer.EnqueuePass(_groundTruthAmbientOcclusionPass);
             }
 
-            if (useScreenSpaceReflection && !isOffscreenDepth)
+            if (screenSpaceReflection && !isOffscreenDepth)
             {
                 renderer.EnqueuePass(_screenSpaceReflectionPass);
+            }
+            if (useScreenSpaceReflection && !isOffscreenDepth)
+            {
                 renderer.EnqueuePass(_screenSpaceReflectionSyncFencePass); // Sync on BeforeRenderingOpaques
             }
 
@@ -607,6 +610,11 @@ namespace Illusion.Rendering
                                                     && !isPreviewOrReflectCamera
                                                     && screenSpaceGlobalIlluminationParam.enable.value;
             _rendererData.SampleScreenSpaceIndirectDiffuse = useScreenSpaceGlobalIllumination;
+            var screenSpaceReflectionParam = VolumeManager.instance.stack.GetComponent<ScreenSpaceReflection>();
+            bool useScreenSpaceReflection = config.EnableScreenSpaceReflection
+                                            && screenSpaceReflection && !isPreviewOrReflectCamera
+                                            && screenSpaceReflectionParam.enable.value;
+            _rendererData.SampleScreenSpaceReflection = useScreenSpaceReflection;
             _rendererData.RequireHistoryDepthNormal = useScreenSpaceGlobalIllumination;
             
             // Re-order light shadow caster pass renderPassEvent better for async compute.

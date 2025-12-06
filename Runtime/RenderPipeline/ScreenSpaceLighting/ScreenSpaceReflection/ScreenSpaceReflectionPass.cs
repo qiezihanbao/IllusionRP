@@ -69,6 +69,8 @@ namespace Illusion.Rendering
         private bool _previousAccumNeedClear;
 
         private ScreenSpaceReflectionAlgorithm _currentSSRAlgorithm;
+        
+        private const string SsrLightingTexture = "_SsrLightingTexture";
 
         // PARAMETERS DECLARATION GUIDELINES:
         // All data is aligned on Vector4 size, arrays elements included.
@@ -122,6 +124,12 @@ namespace Illusion.Rendering
 
         public override void OnCameraSetup(CommandBuffer cmd, ref RenderingData renderingData)
         {
+            if (!IsSSREnabled(ref renderingData))
+            {
+                cmd.SetGlobalTexture(SsrLightingTexture, Texture2D.blackTexture);
+                return;
+            }
+            
             var volume = VolumeManager.instance.stack.GetComponent<ScreenSpaceReflection>();
             _screenWidth = renderingData.cameraData.cameraTargetDescriptor.width;
             _screenHeight = renderingData.cameraData.cameraTargetDescriptor.height;
@@ -451,23 +459,36 @@ namespace Illusion.Rendering
             }
         }
 
-        public override void Execute(ScriptableRenderContext context, ref RenderingData renderingData)
+        private bool IsSSREnabled(ref RenderingData renderingData)
         {
             ref var cameraData = ref renderingData.cameraData;
+            if (!_rendererData.SampleScreenSpaceReflection)
+            {
+                return false;
+            }
+            
             if (cameraData.renderer.cameraColorTargetHandle == null)
-                return;
+                return false;
 
             var material = _material.Value;
             if (!material)
-                return;
-            
-            if (cameraData.cameraType is CameraType.Preview or CameraType.Reflection)
-                return;
+                return false;
             
             // The first color pyramid of the frame is generated after the SSR transparent, so we have no choice but to use the previous
             // frame color pyramid (that includes transparents from the previous frame).
             var preFrameColorRT = _rendererData.GetPreviousFrameColorRT(cameraData, out _);
             if (preFrameColorRT == null)
+            {
+                return false;
+            }
+
+            return true;
+        }
+
+        public override void Execute(ScriptableRenderContext context, ref RenderingData renderingData)
+        {
+            ref var cameraData = ref renderingData.cameraData;
+            if (!IsSSREnabled(ref renderingData))
             {
                 return;
             }

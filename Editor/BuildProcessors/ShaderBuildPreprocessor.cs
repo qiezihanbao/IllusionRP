@@ -15,15 +15,15 @@ namespace Illusion.Rendering.Editor
     internal enum ShaderFeatures : long
     {
         None = 0,
-        ScreenSpaceReflection = (1L << 0),
-        ScreenSpaceGlobalIllumination = (1L << 1),
-        ScreenSpaceOcclusion = (1L << 2),
-        MainLightShadowsScreen = (1L << 3),
-        PrecomputedRadianceTransferGI = (1L << 4),
-        ScreenSpaceSubsurfaceScattering = (1L << 5),
-        OrderIndependentTransparency = (1L << 6),
-        TransparentPerObjectShadow = (1L << 7),
-        FragmentShadowBias = (1L << 8),
+        ScreenSpaceReflection = 1L << 0,
+        ScreenSpaceGlobalIllumination = 1L << 1,
+        ScreenSpaceOcclusion = 1L << 2,
+        MainLightShadowsScreen = 1L << 3,
+        PrecomputedRadianceTransferGI = 1L << 4,
+        ScreenSpaceSubsurfaceScattering = 1L << 5,
+        OrderIndependentTransparency = 1L << 6,
+        TransparentPerObjectShadow = 1L << 7,
+        FragmentShadowBias = 1L << 8,
         // Unused = (1L << 9),
         // Unused = (1L << 10),
         // Unused = (1L << 11),
@@ -108,6 +108,7 @@ namespace Illusion.Rendering.Editor
             
             // SSR
             bool isSSREnabled = false;
+            bool everyRendererHasSSR = true;
             
             // SSGI
             bool isSSGIEnabled = false;
@@ -203,6 +204,10 @@ namespace Illusion.Rendering.Editor
                             shaderFeatures |= ShaderFeatures.ScreenSpaceReflection;
                             isSSREnabled = true;
                         }
+                        else
+                        {
+                            everyRendererHasSSR = false;
+                        }
 
                         if (rendererFeature.screenSpaceGlobalIllumination)
                         {
@@ -297,7 +302,14 @@ namespace Illusion.Rendering.Editor
             var ssrPrefilterMode = PrefilterMode.Remove;
             if (isSSREnabled)
             {
-                ssrPrefilterMode = PrefilterMode.Select;
+                if (everyRendererHasSSR)
+                {
+                    ssrPrefilterMode = PrefilterMode.SelectOnly;
+                }
+                else
+                {
+                    ssrPrefilterMode = PrefilterMode.Select;
+                }
             }
             
             var ssgiPrefilterMode = PrefilterMode.Remove;
