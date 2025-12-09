@@ -164,7 +164,6 @@ Shader "Universal Render Pipeline/HD Hair"
 
 			#include "Packages/com.kurisu.illusion-render-pipelines/Shaders/Hair/HairFunction.hlsl"
 			#define ASE_NEEDS_FRAG_WORLD_NORMAL
-			#define ASE_NEEDS_VERT_TANGENT
 
 
 			#if defined(ASE_EARLY_Z_DEPTH_OPTIMIZE) && (SHADER_TARGET >= 45)
@@ -253,13 +252,10 @@ Shader "Universal Render Pipeline/HD Hair"
 				UNITY_TRANSFER_INSTANCE_ID(v, o);
 				UNITY_INITIALIZE_VERTEX_OUTPUT_STEREO(o);
 
-				half ase_vertexTangentSign = v.ase_tangent.w * ( unity_WorldTransformParams.w >= 0.0 ? 1.0 : -1.0 );
-				o.ase_texcoord8.z = ase_vertexTangentSign;
-				
 				o.ase_texcoord8.xy = v.texcoord.xy;
 				
 				//setting value to unused interpolator channels and avoid initialization warnings
-				o.ase_texcoord8.w = 0;
+				o.ase_texcoord8.zw = 0;
 
 				#ifdef ASE_ABSOLUTE_VERTEX_POS
 					float3 defaultVertexValue = v.vertex.xyz;
@@ -485,9 +481,7 @@ Shader "Universal Render Pipeline/HD Hair"
 				half FinalAlpha47_g2 = lerpResult45_g2;
 				
 				float3 normal77 = BlendNormal( temp_output_63_48 , WorldNormal );
-				half ase_vertexTangentSign = IN.ase_texcoord8.z;
-				float sign77 = ase_vertexTangentSign;
-				float3 localFakeBitangent77 = FakeBitangent_float( normal77 , sign77 );
+				float3 localFakeHairTangentUp77 = FakeHairTangentUp_float( normal77 );
 				
 
 				float3 BaseColor = FinalBaseColor39_g2.rgb;
@@ -507,7 +501,7 @@ Shader "Universal Render Pipeline/HD Hair"
 				#endif
 				
 
-				float3 Tangent = localFakeBitangent77;
+				float3 Tangent = localFakeHairTangentUp77;
 				float Noise = 0;
 				float HighLight = _HighLight;
 				float Wet = 0;
@@ -714,7 +708,6 @@ Shader "Universal Render Pipeline/HD Hair"
 
 			#include "Packages/com.kurisu.illusion-render-pipelines/Shaders/Hair/HairFunction.hlsl"
 			#define ASE_NEEDS_FRAG_WORLD_NORMAL
-			#define ASE_NEEDS_VERT_TANGENT
 
 
 			#if defined(ASE_EARLY_Z_DEPTH_OPTIMIZE) && (SHADER_TARGET >= 45)
@@ -803,13 +796,10 @@ Shader "Universal Render Pipeline/HD Hair"
 				UNITY_TRANSFER_INSTANCE_ID(v, o);
 				UNITY_INITIALIZE_VERTEX_OUTPUT_STEREO(o);
 
-				half ase_vertexTangentSign = v.ase_tangent.w * ( unity_WorldTransformParams.w >= 0.0 ? 1.0 : -1.0 );
-				o.ase_texcoord8.z = ase_vertexTangentSign;
-				
 				o.ase_texcoord8.xy = v.texcoord.xy;
 				
 				//setting value to unused interpolator channels and avoid initialization warnings
-				o.ase_texcoord8.w = 0;
+				o.ase_texcoord8.zw = 0;
 
 				#ifdef ASE_ABSOLUTE_VERTEX_POS
 					float3 defaultVertexValue = v.vertex.xyz;
@@ -1036,9 +1026,7 @@ Shader "Universal Render Pipeline/HD Hair"
 				half FinalAlpha47_g2 = lerpResult45_g2;
 				
 				float3 normal77 = BlendNormal( temp_output_63_48 , WorldNormal );
-				half ase_vertexTangentSign = IN.ase_texcoord8.z;
-				float sign77 = ase_vertexTangentSign;
-				float3 localFakeBitangent77 = FakeBitangent_float( normal77 , sign77 );
+				float3 localFakeHairTangentUp77 = FakeHairTangentUp_float( normal77 );
 				
 
 				float3 BaseColor = FinalBaseColor39_g2.rgb;
@@ -1058,7 +1046,7 @@ Shader "Universal Render Pipeline/HD Hair"
 				#endif
 				
 
-				float3 Tangent = localFakeBitangent77;
+				float3 Tangent = localFakeHairTangentUp77;
 				float Noise = 0;
 				float HighLight = _HighLight;
 				float Wet = 0;
@@ -2438,8 +2426,6 @@ Node;AmplifyShaderEditor.TemplateMultiPassMasterNode;67;735.5916,303.83;Float;Fa
 Node;AmplifyShaderEditor.TemplateMultiPassMasterNode;68;735.5916,303.83;Float;False;False;-1;2;ASEMaterialInspector;0;1;New Amplify Shader;15510517c6d54c01b20d9803f56b602d;True;PostDepthOnly;0;4;PostDepthOnly;0;False;False;False;False;False;False;False;False;False;False;False;False;True;0;False;;False;True;0;False;;False;False;False;False;False;False;False;False;False;True;False;0;False;;255;False;;255;False;;0;False;;0;False;;0;False;;0;False;;0;False;;0;False;;0;False;;0;False;;False;True;1;False;;True;3;False;;True;True;0;False;;0;False;;True;4;RenderPipeline=UniversalPipeline;RenderType=Opaque=RenderType;Queue=Geometry=Queue=0;UniversalMaterialType=Lit;True;3;True;12;all;0;False;False;False;False;False;False;False;False;False;False;False;False;True;0;False;;False;False;False;True;False;False;False;False;0;False;;False;False;False;False;False;False;False;False;False;True;1;False;;False;False;True;1;LightMode=PostDepthOnly;False;False;0;;0;0;Standard;0;False;0
 Node;AmplifyShaderEditor.TemplateMultiPassMasterNode;69;735.5916,303.83;Float;False;False;-1;2;ASEMaterialInspector;0;1;New Amplify Shader;15510517c6d54c01b20d9803f56b602d;True;DepthNormals;0;5;DepthNormals;0;False;False;False;False;False;False;False;False;False;False;False;False;True;0;False;;False;True;0;False;;False;False;False;False;False;False;False;False;False;True;False;0;False;;255;False;;255;False;;0;False;;0;False;;0;False;;0;False;;0;False;;0;False;;0;False;;0;False;;False;True;1;False;;True;3;False;;True;True;0;False;;0;False;;True;4;RenderPipeline=UniversalPipeline;RenderType=Opaque=RenderType;Queue=Geometry=Queue=0;UniversalMaterialType=Lit;True;3;True;12;all;0;False;True;1;1;False;;0;False;;0;1;False;;0;False;;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;True;1;False;;True;3;False;;False;True;1;LightMode=DepthNormalsOnly;False;False;0;;0;0;Standard;0;False;0
 Node;AmplifyShaderEditor.FunctionNode;63;-20.99571,289.0504;Inherit;False;HD Surface Input;0;;2;33e3ab795eaed4a4b88fda58c09eaeac;0;0;6;COLOR;0;FLOAT3;48;FLOAT;49;FLOAT;50;FLOAT;51;FLOAT;52
-Node;AmplifyShaderEditor.CustomExpressionNode;77;493.1074,616.3425;Float;False; ;3;File;2;True;normal;FLOAT3;0,0,0;In;;Inherit;False;True;sign;FLOAT;0;In;;Inherit;False;FakeBitangent;False;False;0;e486ecd7a06f4ca09dfee93386face0c;True;2;0;FLOAT3;0,0,0;False;1;FLOAT;0;False;1;FLOAT3;0
-Node;AmplifyShaderEditor.TangentSignVertexDataNode;76;162.1405,778.6084;Inherit;False;0;1;FLOAT;0
 Node;AmplifyShaderEditor.RangedFloatNode;61;410.075,521.153;Inherit;False;Property;_AlphaCutoff;Alpha Cutoff;15;0;Create;True;0;0;0;False;0;False;0.5;0.051;0;1;0;1;FLOAT;0
 Node;AmplifyShaderEditor.RangedFloatNode;74;401.1411,827.9631;Inherit;False;Property;_HighLight;HighLight;17;0;Create;True;0;0;0;False;0;False;1;1;0;1;0;1;FLOAT;0
 Node;AmplifyShaderEditor.TemplateMultiPassMasterNode;64;741.2917,300.03;Half;False;True;-1;2;ASEMaterialInspector;0;17;Universal Render Pipeline/HD Hair;15510517c6d54c01b20d9803f56b602d;True;Forward;0;0;Forward;18;False;False;False;False;False;False;False;False;False;False;False;False;True;0;False;;True;True;0;True;_CullMode;False;False;False;False;False;False;False;False;False;True;False;0;False;;255;False;;255;False;;0;False;;0;False;;0;False;;0;False;;0;False;;0;False;;0;False;;0;False;;False;True;1;False;;True;3;False;;True;True;0;False;;0;False;;True;4;RenderPipeline=UniversalPipeline;RenderType=Opaque=RenderType;Queue=Geometry=Queue=0;UniversalMaterialType=Lit;True;3;True;12;all;0;False;True;1;1;False;;0;False;;1;1;False;;0;False;;False;False;False;False;False;False;False;False;False;False;False;False;False;False;True;True;True;True;True;0;False;;False;False;False;False;False;False;False;True;False;0;False;;255;False;;255;False;;0;False;;0;False;;0;False;;0;False;;0;False;;0;False;;0;False;;0;False;;False;True;1;False;;True;3;False;;True;True;0;False;;0;False;;True;1;LightMode=UniversalForwardOnly;False;False;0;;0;0;Standard;31;Workflow;1;638897361365151930;Surface;0;0;  Blend;0;0;Two Sided;0;0;Fragment Normal Space,InvertActionOnDeselection;0;0;Forward Only;1;638916077884092957;Cast Shadows;1;638897458559057513;Use Shadow Threshold;0;0;Receive Shadows;1;0;Diffuse Attenuation;0;638898227118641762;Shading Model;1;0;Multi Pass;1;638897389481258259;GPU Instancing;1;0;LOD CrossFade;1;0;Built-in Fog;1;0;_FinalColorxAlpha;0;0;Override Baked GI;0;0;DOTS Instancing;0;0;Tessellation;0;0;  Phong;0;0;  Strength;0.5,False,;0;  Type;0;0;  Tess;16,False,;0;  Min;10,False,;0;  Max;25,False,;0;  Edge Length;16,False,;0;  Max Displacement;25,False,;0;Write Depth;0;0;  Early Z;0;0;Vertex Position,InvertActionOnDeselection;1;0;Debug Display;0;0;0;6;True;True;True;True;True;True;False;;True;0
@@ -2448,8 +2434,7 @@ Node;AmplifyShaderEditor.ComponentMaskNode;79;286.349,91.36666;Inherit;False;Tru
 Node;AmplifyShaderEditor.ColorNode;78;-16.20084,90.21621;Inherit;False;Property;_Tint;Tint;14;0;Create;True;0;0;0;False;0;False;0,0,0,0;1,1,1,1;True;0;5;COLOR;0;FLOAT;1;FLOAT;2;FLOAT;3;FLOAT;4
 Node;AmplifyShaderEditor.BlendNormalsNode;80;227.4289,615.5288;Inherit;False;0;3;0;FLOAT3;0,0,0;False;1;FLOAT3;0,0,0;False;2;FLOAT3;0,0,0;False;1;FLOAT3;0
 Node;AmplifyShaderEditor.WorldNormalVector;75;-71.87347,632.8685;Float;False;False;1;0;FLOAT3;0,0,1;False;4;FLOAT3;0;FLOAT;1;FLOAT;2;FLOAT;3
-WireConnection;77;0;80;0
-WireConnection;77;1;76;0
+Node;AmplifyShaderEditor.CustomExpressionNode;77;487.9074,617.6425;Float;False; ;3;File;1;True;normal;FLOAT3;0,0,0;In;;Inherit;False;FakeHairTangentUp;False;False;0;e486ecd7a06f4ca09dfee93386face0c;True;1;0;FLOAT3;0,0,0;False;1;FLOAT3;0
 WireConnection;64;0;63;0
 WireConnection;64;1;63;48
 WireConnection;64;2;79;0
@@ -2463,5 +2448,6 @@ WireConnection;64;23;74;0
 WireConnection;79;0;78;0
 WireConnection;80;0;63;48
 WireConnection;80;1;75;0
+WireConnection;77;0;80;0
 ASEEND*/
-//CHKSM=4DE9FC0CF0852421FED3E8B45DC9C9850A87BD08
+//CHKSM=6D65CEE7BC63915308E5157EEE21F84F1A83EE8A
