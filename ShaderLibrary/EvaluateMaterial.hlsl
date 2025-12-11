@@ -94,8 +94,14 @@ BRDFOcclusionFactor CreateBRDFOcclusionFactorMultiBounce(AmbientOcclusionFactor 
 half3 SampleScreenSpaceBentNormal(float2 normalizedScreenSpaceUV)
 {
     float2 uv = UnityStereoTransformScreenSpaceTex(normalizedScreenSpaceUV);
-    half4 packedAO = half4(SAMPLE_TEXTURE2D_X(_ScreenSpaceOcclusionTexture, sampler_ScreenSpaceOcclusionTexture, uv));
+    half4 packedAO = half4(SAMPLE_TEXTURE2D_X(_ScreenSpaceOcclusionTexture, sampler_LinearClamp, uv));
     return packedAO.gba * half(2.0f) - half(1.0f);
+}
+
+half IllusionSampleAmbientOcclusion(float2 normalizedScreenSpaceUV)
+{
+    float2 uv = UnityStereoTransformScreenSpaceTex(normalizedScreenSpaceUV);
+    return half(SAMPLE_TEXTURE2D_X(_ScreenSpaceOcclusionTexture, sampler_LinearClamp, uv).x);
 }
 
 // Transparent with depth post pass can also receive ambient occlusion
@@ -104,7 +110,7 @@ AmbientOcclusionFactor IllusionGetScreenSpaceAmbientOcclusion(float2 normalizedS
     AmbientOcclusionFactor aoFactor;
 
 #if defined(_SCREEN_SPACE_OCCLUSION) && SURFACE_TYPE_RECEIVE_OCCLUSION && !_NOT_RECEIVE_OCCLUSION
-    float ssao = saturate(SampleAmbientOcclusion(normalizedScreenSpaceUV) + (1.0 - _AmbientOcclusionParam.x));
+    float ssao = saturate(IllusionSampleAmbientOcclusion(normalizedScreenSpaceUV) + (1.0 - _AmbientOcclusionParam.x));
     aoFactor.indirectAmbientOcclusion = ssao;
     aoFactor.directAmbientOcclusion = lerp(half(1.0), ssao, _AmbientOcclusionParam.w * _AmbientOcclusionIntensity);
 #else
